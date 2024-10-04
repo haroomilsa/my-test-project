@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-require('dotenv').config();  // Load variables from .env file
+require('dotenv').config();  
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -34,7 +34,20 @@ const createTables = async()=>{
     );
   `;
   await pool.query(createProjectsTableQuery);
-  console.log('Projects table created or already exists.');
+  const createPeoplesTableQuery = `
+  
+            CREATE TABLE IF NOT EXISTS peoples (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL
+  )
+  `;
+  
+  
+  await pool.query(createPeoplesTableQuery);
+
+  console.log('Peoples table created or already exists.');
 
 
 
