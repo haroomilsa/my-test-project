@@ -47,40 +47,9 @@ const createTables = async()=>{
 }
 createTables();
 
-// const getUsersWithProjects = async () => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT 
-//         u.id AS user_id, 
-//         u.name AS user_name, 
-//         u.email, 
-//         p.id AS project_id, 
-//         p.project_name, 
-//         p.description 
-//       FROM users u
-//       LEFT JOIN projects p ON u.id = p.user_id
-//     `);
-    
-//     return result.rows; // Returns the joined results
-//   } catch (err) {
-//     console.error('Error fetching users with projects:', err.message);
-//     throw err; // Optional: re-throw the error for handling in calling function
-//   }
-// };
 
-// // Call the function to create tables
-// createTables().then(async () => {
-//   const usersWithProjects = await getUsersWithProjects();
-//   console.log(usersWithProjects);
-
-// });
-
-// Export the pool and function if needed
 module.exports =pool; 
 
-// {
-//   pool,
-//   getUsersWithProjects
-// };
+
 
 
