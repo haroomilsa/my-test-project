@@ -34,9 +34,28 @@ const createTables = async()=>{
     );
   `;
   await pool.query(createProjectsTableQuery);
-  const createPeoplesTableQuery = `
+
+
+  const createUserProjectsTableQuery = `
+  CREATE TABLE IF NOT EXISTS user_projects (
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, project_id)
+  );
+`;
+await pool.query(createUserProjectsTableQuery);
+
+const createUserProjectOneToOneQuery = `
+  ALTER TABLE projects
+  ADD COLUMN user_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE;
+`;
+await pool.query(createUserProjectOneToOneQuery);
+
+
   
-            CREATE TABLE IF NOT EXISTS peoples (
+  const createUserAuthQuery = `
+  
+            CREATE TABLE IF NOT EXISTS usersAuth (
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
@@ -45,9 +64,9 @@ const createTables = async()=>{
   `;
   
   
-  await pool.query(createPeoplesTableQuery);
+  await pool.query(createUserAuthQuery);
 
-  console.log('Peoples table created or already exists.');
+  console.log('User Auth table created or already exists.');
 
 
 
