@@ -1,21 +1,24 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator')
-const { createUser, findUserByEmail } = require('../models/user-auth-model');
+const { createUser, findUserByEmail } = require('../models/users-model.js');
 require('dotenv').config();
+const { v4: uuidv4 } = require('uuid');
+
 
  const register = async (req, res) => {
   const { name, email, password } = req.body;
-  if (!name) {
-    return res.status(400).json({ error: 'Name is required' });
+  switch (true) {
+    case !name:
+      return res.status(400).json({ error: 'Name is required' });
+    case !email:
+      return res.status(400).json({ error: 'Email is required' });
+    case !password:
+      return res.status(400).json({ error: 'Password is required' });
+    default:
+      
   }
-  if (!email) {
-    return res.status(400).json({ error: 'email  is required' });
-  }
-  if (!password) {
-    return res.status(400).json({ error: 'password is required' });
-  }
-
+  
   const formattedEmail = email.trim().toLowerCase(); 
   if (!validator.isEmail(formattedEmail)) {
     return res.status(400).json({ error: 'Invalid email format' });

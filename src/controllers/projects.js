@@ -1,87 +1,79 @@
-const pool = require('../../db');
-const { v4: uuidv4 } = require('uuid');
+const {
+  createProject,
+  findProjectByName,
+  getAllProjects,
+  getProjectById,
+  updateProject,
+  deleteProject,
+} = require('../models/projects-model');
 
 
-exports.createProject = async (req, res) => {
-  const { project_name,user_id, description } = req.body;
+exports.createProjectController = async (req, res) => {
+  const { project_name, description } = req.body;
 
-  
   if (!project_name || !description) {
     return res.status(400).json({ error: 'project_name and description are required' });
   }
 
   try {
-    
-    const existingProject = await pool.query('SELECT * FROM projects WHERE project_name = $1', [project_name]);
-
-    if (existingProject.rows.length > 0) {
-      
-      return res.status(409).json({ error: 'ProjectName already exists' });
+    const existingProject = await findProjectByName(project_name);
+    if (existingProject) {
+      return res.status(409).json({ error: 'Project name already exists' });
     }
 
-    
-    const newProject = await pool.query(
-      'INSERT INTO projects (id,user_id,project_name, description) VALUES ($1, $2,$3,$4) RETURNING *',
-      [uuidv4(),user_id,project_name, description]
-    );
-
-    
-    res.status(201).json(newProject.rows[0]);
+    const newProject = await createProject(project_name, description);
+    res.status(201).json(newProject);
   } catch (err) {
-    
     res.status(500).json({ error: 'Server error: ' + err.message });
   }
 };
 
 
-
-exports.getAllProjects = async (req, res) => {
+exports.getAllProjectsController = async (req, res) => {
   try {
-    const projects = await pool.query('SELECT * FROM projects');
-    res.status(200).json(projects.rows);
+    const projects = await getAllProjects();
+    res.status(200).json(projects);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 
-exports.getProjectsById = async (req, res) => {
+exports.getProjectsByIdController = async (req, res) => {
   const { id } = req.params;
   try {
-    const project = await pool.query('SELECT * FROM projects WHERE id = $1', [id]);
-    if (project.rows.length === 0) {
+    const project = await getProjectById(id);
+    if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
-    res.status(200).json(project.rows[0]);
+    res.status(200).json(project);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 
-exports.updateProject = async (req, res) => {
+exports.updateProjectController = async (req, res) => {
   const { id } = req.params;
-  const { project_name, description, } = req.body;
+  const { project_name, description } = req.body;
+
   try {
-    const updatedProject = await pool.query(
-      'UPDATE projects SET project_name = $1, description = $2, WHERE id = $4 RETURNING *',
-      [project_name, description, id]
-    );
-    if (updatedProject.rows.length === 0) {
+    const updatedProject = await updateProject(id, project_name, description);
+    if (!updatedProject) {
       return res.status(404).json({ message: 'Project not found' });
     }
-    res.status(200).json(updatedProject.rows[0]);
+    res.status(200).json(updatedProject);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 
-exports.deleteProject = async (req, res) => {
+exports.deleteProjectController = async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedProject = await pool.query('DELETE FROM projects WHERE id = $1 RETURNING *', [id]);
-    if (deletedProject.rows.length === 0) {
+    const deletedProject = await deleteProject(id);
+    if (!deletedProject) {
       return res.status(404).json({ message: 'Project not found' });
     }
     res.status(200).json({ message: 'Project deleted' });
@@ -89,3 +81,30 @@ exports.deleteProject = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
