@@ -1,14 +1,23 @@
-const pool = require('../../db');
+const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
 
 const createProject = async (project_name, description) => {
   const newProject = await pool.query(
-    'INSERT INTO Projects (id, project_name, description) VALUES ($1, $2, $3) RETURNING *',
+
+
+    'INSERT INTO Projects (id,  project_name, description) VALUES ($1, $2, $3) RETURNING *',
     [uuidv4(), project_name, description]
   );
   return newProject.rows[0];
 };
+  const getProjects = async (limit)=> {
+  
+
+     await pool.query('SELECT * FROM projects LIMIT $1', [limit]);
+    return result.rows;
+  
+}
 
 
 const findProjectByName = async (project_name) => {
@@ -44,6 +53,7 @@ const deleteProject = async (id) => {
 
 module.exports = {
   createProject,
+  getProjects,
   findProjectByName,
   getAllProjects,
   getProjectById,

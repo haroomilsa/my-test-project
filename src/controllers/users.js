@@ -3,11 +3,10 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator')
 const { createUser, findUserByEmail } = require('../models/users-model.js');
 require('dotenv').config();
-const { v4: uuidv4 } = require('uuid');
 
 
  const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password,experience} = req.body;
   switch (true) {
     case !name:
       return res.status(400).json({ error: 'Name is required' });
@@ -15,6 +14,7 @@ const { v4: uuidv4 } = require('uuid');
       return res.status(400).json({ error: 'Email is required' });
     case !password:
       return res.status(400).json({ error: 'Password is required' });
+      
     default:
       
   }
@@ -40,7 +40,8 @@ if (!isPasswordStrong(password)) {
     if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await createUser(name, formattedEmail, hashedPassword);
+    const user = await createUser(name, formattedEmail, hashedPassword,experience);
+ 
 
     res.status(201).json({ message: 'User registered', user });
   } catch (err) {
@@ -66,4 +67,12 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+
+
+
+
+
+
+
+
+module.exports = { register, login};

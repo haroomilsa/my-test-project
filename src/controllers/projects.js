@@ -9,10 +9,15 @@ const {
 
 
 exports.createProjectController = async (req, res) => {
-  const { project_name, description } = req.body;
-
-  if (!project_name || !description) {
-    return res.status(400).json({ error: 'project_name and description are required' });
+  const {  project_name, description } = req.body;
+  switch (true) {
+    case !project_name:
+      return res.status(400).json({ error: 'Project Name is required' });
+    case !description:
+      return res.status(400).json({ error: 'Description is required' });
+   
+    default:
+      
   }
 
   try {
@@ -21,7 +26,7 @@ exports.createProjectController = async (req, res) => {
       return res.status(409).json({ error: 'Project name already exists' });
     }
 
-    const newProject = await createProject(project_name, description);
+    const newProject = await createProject( project_name, description);
     res.status(201).json(newProject);
   } catch (err) {
     res.status(500).json({ error: 'Server error: ' + err.message });
